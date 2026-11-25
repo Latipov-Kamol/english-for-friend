@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Новый урок</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Новый урок</h1>
+<p class="sub">Заполни поля — страница сама напишет код для data.js.</p>
+<label for="title">Название</label><input id="title" placeholder="Урок 3">
+<label for="date">Дата</label><input id="date" type="date">
+<label for="w">Слова: по одному в строке, «слово - перевод»</label>
+<textarea id="w" rows="6" placeholder="important - важный&#10;travel - путешествовать"></textarea>
+<label for="t">Текст на английском (используй слова урока)</label>
+<textarea id="t" rows="5"></textarea>
+<label for="tt">Перевод текста</label>
+<textarea id="tt" rows="4"></textarea>
+<button class="main" id="go">Сделать код</button>
+<p id="warn" class="hint"></p>
+<pre class="out" id="out" hidden></pre>
+<div class="row"><button id="cp" hidden>Скопировать код</button></div>
+</main>
+<script>
+var $=function(i){return document.getElementById(i)};
+var d=new Date();$('date').value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+$('go').onclick=function(){
+  var words=$('w').value.split('\n').map(function(l){var m=l.trim().match(/^(.+?)(?:\s+[-–—]\s+|\s*[=:]\s*)(.+)$/);return m?{en:m[1].trim(),tr:m[2].trim()}:null}).filter(Boolean);
+  if(!words.length){$('warn').textContent='Добавь хотя бы одно слово в формате «слово - перевод».';return}
+  var text=$('t').value.trim(),miss=words.filter(function(w){return !new RegExp('\\b'+w.en+'(s|es|ed|d|ing)?\\b','i').test(text)}).map(function(w){return w.en});
+  $('warn').textContent=miss.length?'Этих слов нет в тексте: '+miss.join(', ')+'. Урок будет работать, но в режимах «Читаем» и «Вставь слово» их не будет.':'';
+  var lesson={id:$('date').value+'-'+Date.now().toString(36).slice(-4),title:$('title').value.trim()||'Новый урок',date:$('date').value,words:words,text:text,textTr:$('tt').value.trim()};
+  $('out').textContent=',\n'+JSON.stringify(lesson,null,2);$('out').hidden=false;$('cp').hidden=false;
+};
+$('cp').onclick=function(){try{navigator.clipboard.writeText($('out').textContent);$('cp').textContent='Скопировано ✓'}catch(e){$('cp').textContent='Выдели код и скопируй вручную'}};
+</script>
+</body>
+</html>
