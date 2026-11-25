@@ -48,3 +48,13 @@ input{width:100%;margin:12px 0;padding:14px;border:2px solid var(--ink);border-r
 textarea{width:100%;font:inherit;padding:12px;border:2px solid var(--ink);border-radius:12px;background:#fff;margin:4px 0 14px;min-height:90px}
 label{font-weight:700;display:block}
 .out{white-space:pre-wrap;word-break:break-word;font:.9rem/1.5 ui-monospace,Consolas,monospace;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:12px;margin-top:16px}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+main{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
+.card,.mode{min-height:60px}
+.opts button{padding:16px}
+.dock{position:sticky;bottom:0;padding:10px 0 calc(10px + env(safe-area-inset-bottom));background:var(--paper)}
+.dock .main{padding:16px;font-size:1.1rem}
+#cnt{position:sticky;top:0;z-index:2;background:var(--paper);padding:8px 0;margin:0 0 8px;opacity:1;font-weight:600}
+@media (max-width:420px){main{padding:14px 12px 40px}h1{font-size:1.7rem}.big{font-size:1.5rem}.read{font-size:1.15rem;padding:14px}.flash{gap:8px}}

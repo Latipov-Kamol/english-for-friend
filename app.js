@@ -17,14 +17,14 @@ function pc(i,m){var v=P[K(i)+'-'+m];return v==null?'—':v+'%'}
 (function(){var d=P.days||[];if(d.indexOf(today())<0){d.push(today());P.days=d;store()}})();
 function rx(W,f){return new RegExp('\\b('+W.map(function(w){return w.en}).join('|')+')(s|es|ed|d|ing)?\\b',f)}
 function on(sel,fn){root.querySelectorAll(sel).forEach(function(b){b.onclick=function(){fn(b)}})}
-var MODES=[['learn','📖','Слова','Карточки: нажми — увидишь перевод'],['read','📚','Читаем','Текст с этими словами'],['quiz','🎯','Выбери перевод','Слово → правильный перевод'],['write','✍️','Напиши слово','Перевод → английское слово'],['gap','🧩','Вставь слово','Пропуски в тексте урока'],['listen','🎧','Слушай и пиши','Услышь слово и напиши его']];
-var TESTS=['quiz','write','gap','listen'];
+var MODES=[['learn','📖','Слова','Карточки: нажми — увидишь перевод'],['read','📚','Читаем','Текст с этими словами'],['quiz','🎯','Выбери перевод','Слово → правильный перевод'],['gap','🧩','Вставь слово','Пропуски в тексте урока'],['listen','🎧','Слушай и пиши','Услышь слово и напиши его']];
+var TESTS=['quiz','gap','listen'];
 function order(){return A.lessons.map(function(_,i){return i}).sort(function(a,b){var x=A.lessons[a].date||'',y=A.lessons[b].date||'';return x<y?1:x>y?-1:b-a})}
 
 function home(){
   root.innerHTML='<header><h1>'+A.title+'</h1><p>'+A.subtitle+'</p></header><div class="list">'+
   order().map(function(i){var l=A.lessons[i],n=l.words.length,s=seen(i),d=TESTS.filter(function(m){return (P[K(i)+'-'+m]||0)>=80}).length;
-    return '<button class="card'+(s>=n&&d===4?' done':'')+'" data-i="'+i+'"><span><b>'+l.title+'</b><small>'+(l.date?fmt(l.date)+' · ':'')+n+' слов · карточки '+s+'/'+n+' · тесты '+d+'/4</small></span>'+(l.date===today()?'<em>Сегодня</em>':'')+'</button>'}).join('')+
+    return '<button class="card'+(s>=n&&d===TESTS.length?' done':'')+'" data-i="'+i+'"><span><b>'+l.title+'</b><small>'+(l.date?fmt(l.date)+' · ':'')+n+' слов · карточки '+s+'/'+n+' · тесты '+d+'/'+TESTS.length+'</small></span>'+(l.date===today()?'<em>Сегодня</em>':'')+'</button>'}).join('')+
   '</div><div class="row"><button class="ghost" id="rp">📤 Отчёт для учителя</button></div>';
   on('[data-i]',function(b){menu(+b.dataset.i)});
   document.getElementById('rp').onclick=report;
@@ -32,7 +32,7 @@ function home(){
 function report(){
   var t='Отчёт · '+A.title+' · '+fmt(today())+'\nДней занятий: '+(P.days||[]).length+'\n';
   order().forEach(function(i){var l=A.lessons[i],n=l.words.length,s=seen(i);
-    t+='\n'+l.title+(l.date?' ('+fmt(l.date)+')':'')+': карточки '+s+'/'+n+(s>=n?' ✅':'')+' · выбор '+pc(i,'quiz')+' · письмо '+pc(i,'write')+' · пропуски '+pc(i,'gap')+' · слух '+pc(i,'listen')});
+    t+='\n'+l.title+(l.date?' ('+fmt(l.date)+')':'')+': карточки '+s+'/'+n+(s>=n?' ✅':'')+' · выбор '+pc(i,'quiz')+' · пропуски '+pc(i,'gap')+' · слух '+pc(i,'listen')});
   root.innerHTML='<button class="back" id="bk">← Все уроки</button><h2>Отчёт</h2><pre class="rep" id="rt"></pre><div class="row"><button class="main" id="sd">Отправить</button><button id="cp">Скопировать</button></div><p id="fb"></p>';
   document.getElementById('rt').textContent=t;
   document.getElementById('bk').onclick=home;
@@ -74,7 +74,6 @@ function read(i){
 function qs(i,mode){
   var L=A.lessons[i],W=L.words,all=A.lessons.reduce(function(a,l){return a.concat(l.words)},[]);
   if(mode==='quiz')return sh(W).map(function(w){var o=sh(all.filter(function(x){return x.tr!==w.tr})).slice(0,3).map(function(x){return x.tr});return{p:w.en,say:w.en,t:'c',a:w.tr,o:sh(o.concat(w.tr))}});
-  if(mode==='write')return sh(W).map(function(w){return{p:w.tr,t:'w',a:w.en,h:'Первая буква: '+w.en[0]}});
   if(mode==='listen')return sh(W).map(function(w){return{p:'Послушай и напиши',say:w.en,auto:1,t:'w',a:w.en}});
   var out=[];(L.text.match(/[^.!?]+[.!?]+["”]?\s*/g)||[]).forEach(function(s){
     var m=s.match(rx(W,'i'));if(!m)return;
@@ -91,10 +90,10 @@ function run(i,mode){
       document.getElementById('again').onclick=function(){run(i,mode)};document.getElementById('mn').onclick=function(){menu(i)};return}
     var q=Q[n],done=false;
     root.innerHTML=back(i)+'<div class="bar"><i style="width:'+n/Q.length*100+'%"></i></div><p class="big">'+q.p+'</p>'+(q.say?'<button class="ghost" id="sp">🔊 Послушать</button>':'')+(q.h?'<p class="hint">'+q.h+'</p>':'')+
-      (q.t==='c'?'<div class="opts">'+q.o.map(function(o){return '<button data-o="'+o+'">'+o+'</button>'}).join('')+'</div>':'<input id="in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Напиши по-английски"><button class="main" id="ok">Проверить</button>')+'<p id="fb"></p><button class="main" id="nx" hidden>Дальше</button>';
+      (q.t==='c'?'<div class="opts">'+q.o.map(function(o){return '<button data-o="'+o+'">'+o+'</button>'}).join('')+'</div>':'<input id="in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Напиши по-английски">')+'<p id="fb"></p><div class="dock">'+(q.t==='c'?'':'<button class="main" id="ok">Проверить</button>')+'<button class="main" id="nx" hidden>Дальше</button></div>';
     document.getElementById('bk').onclick=function(){document.onkeydown=null;menu(i)};
     var fb=document.getElementById('fb'),nx=document.getElementById('nx');
-    function fin(good){done=true;if(good)sc++;fb.textContent=good?'Верно!':'Правильно: '+q.a;fb.className=good?'ok':'no';fb.style.background='none';nx.hidden=false;nx.focus()}
+    function fin(good){done=true;if(good)sc++;fb.textContent=good?'Верно!':'Правильно: '+q.a;fb.className=good?'ok':'no';fb.style.background='none';var okb=document.getElementById('ok');if(okb)okb.hidden=true;nx.hidden=false;nx.focus()}
     nx.onclick=function(){n++;show()};
     if(q.say){document.getElementById('sp').onclick=function(){speak(q.say)};if(q.auto)setTimeout(function(){speak(q.say)},300)}
     if(q.t==='c'){on('[data-o]',function(b){if(done)return;var good=b.dataset.o===q.a;b.className=good?'ok':'no';root.querySelectorAll('[data-o]').forEach(function(x){if(x.dataset.o===q.a)x.className='ok'});fin(good)})}
