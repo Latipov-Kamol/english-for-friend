@@ -58,3 +58,4 @@ main{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
 .dock .main{padding:16px;font-size:1.1rem}
 #cnt{position:sticky;top:0;z-index:2;background:var(--paper);padding:8px 0;margin:0 0 8px;opacity:1;font-weight:600}
 @media (max-width:420px){main{padding:14px 12px 40px}h1{font-size:1.7rem}.big{font-size:1.5rem}.read{font-size:1.15rem;padding:14px}.flash{gap:8px}}
+.logo{width:60px;height:60px;display:block;margin:4px 0 6px;border-radius:14px}

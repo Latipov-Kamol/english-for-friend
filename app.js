@@ -22,7 +22,7 @@ var TESTS=['quiz','gap','listen'];
 function order(){return A.lessons.map(function(_,i){return i}).sort(function(a,b){var x=A.lessons[a].date||'',y=A.lessons[b].date||'';return x<y?1:x>y?-1:b-a})}
 
 function home(){
-  root.innerHTML='<header><h1>'+A.title+'</h1><p>'+A.subtitle+'</p></header><div class="list">'+
+  root.innerHTML='<header><img class="logo" src="logo.svg" alt=""><h1>'+A.title+'</h1><p>'+A.subtitle+'</p></header><div class="list">'+
   order().map(function(i){var l=A.lessons[i],n=l.words.length,s=seen(i),d=TESTS.filter(function(m){return (P[K(i)+'-'+m]||0)>=80}).length;
     return '<button class="card'+(s>=n&&d===TESTS.length?' done':'')+'" data-i="'+i+'"><span><b>'+l.title+'</b><small>'+(l.date?fmt(l.date)+' · ':'')+n+' слов · карточки '+s+'/'+n+' · тесты '+d+'/'+TESTS.length+'</small></span>'+(l.date===today()?'<em>Сегодня</em>':'')+'</button>'}).join('')+
   '</div><div class="row"><button class="ghost" id="rp">📤 Отчёт для учителя</button></div>';
